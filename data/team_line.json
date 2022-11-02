@@ -1,0 +1,34 @@
+[
+  {
+    "team_name": "team1",
+    "created_date": "2022-07-19",
+    "pipeline_success_rate": "40",
+    "non_pipeline_success_rate": "0",
+    "pipeline_failure_rate": "60",
+    "non_pipeline_failure_rate": "0"
+  },
+  {
+    "team_name": "team1",
+    "created_date": "2022-07-20",
+    "pipeline_success_rate": "40",
+    "non_pipeline_success_rate": "0",
+    "pipeline_failure_rate": "60",
+    "non_pipeline_failure_rate": "0"
+  },
+  {
+    "team_name": "team1",
+    "created_date": "2022-07-21",
+    "pipeline_success_rate": "0",
+    "non_pipeline_success_rate": "100",
+    "pipeline_failure_rate": "0",
+    "non_pipeline_failure_rate": "0"
+  },
+  {
+    "team_name": "team1",
+    "created_date": "2022-07-22",
+    "pipeline_success_rate": "0",
+    "non_pipeline_success_rate": "100",
+    "pipeline_failure_rate": "0",
+    "non_pipeline_failure_rate": "0"
+  }
+]

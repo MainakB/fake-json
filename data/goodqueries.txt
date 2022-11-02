@@ -1,0 +1,43 @@
+@@@@@@@@@------------ Teams list     -------------------@@@@@@@@
+SELECT  jd.team_name,
+	CEIL(AVG( (bh.build_result = 'SUCCESS' and jd.isInPipeline=true) + (bh.build_result = 'UNSTABLE' and jd.isInPipeline=true)) * 100) AS pipeline_success_rate,
+    CEIL(AVG( (bh.build_result = 'SUCCESS' and jd.isInPipeline=false) + (bh.build_result = 'UNSTABLE' and jd.isInPipeline=false)) * 100) AS non_pipeline_success_rate,
+COUNT(DISTINCT(bh.tenant_name)) AS tenants_run,
+CEIL(AVG(bh.build_duration)/1000) as avg_duration,
+CEIL(AVG(CASE WHEN jd.isInPipeline=true THEN bh.build_duration END)/1000) as pipeline_avg_duration,
+CEIL(AVG(CASE WHEN jd.isInPipeline=false THEN bh.build_duration END)/1000) as nonpipeline_avg_duration,
+COUNT(bh.build_url) AS total_jobs_count,
+COUNT(CASE WHEN jd.isInPipeline=true THEN bh.build_url END) AS pipeline_jobs_count,
+COUNT(CASE WHEN jd.isInPipeline=false THEN bh.build_url END) AS non_pipeline_jobs_count
+FROM skapa_jobs.job_build_history  bh  
+JOIN skapa_jobs.job_details jd
+ON bh.job_id=jd.job_name
+AND bh.build_result IN ( 'SUCCESS', 'FAILURE', 'UNSTABLE') 
+GROUP BY jd.team_name
+
+
+@@@@@@@----------------------- Team trend landing dashboard ---------------@@@@@@@@@@@@@
+SELECT ds.team_name,
+DATE(bhd.created_timestamp) AS created_date,
+CEIL(AVG( (bhd.build_result = 'SUCCESS' and ds.isInPipeline=true) + (bhd.build_result = 'UNSTABLE' and ds.isInPipeline=true)) * 100) AS pipeline_success_rate,
+CEIL(AVG( (bhd.build_result = 'SUCCESS' and ds.isInPipeline=false) + (bhd.build_result = 'UNSTABLE' and ds.isInPipeline=false)) * 100) AS non_pipeline_success_rate,
+CEIL(AVG( (bhd.build_result = 'FAILURE' and ds.isInPipeline=true)) * 100) AS pipeline_failure_rate,
+CEIL(AVG( (bhd.build_result = 'FAILURE' and ds.isInPipeline=false)) * 100) AS non_pipeline_failure_rate
+FROM skapa_jobs.job_build_history bhd 
+JOIN skapa_jobs.job_details ds ON bhd.job_id=ds.job_name
+WHERE ds.team_name="team1"
+GROUP BY ds.team_name,created_date
+
+
+@@@@@@----------------- Tenant averages teams landing second bar widget ---------------@@@@@
+SELECT bhd.tenant_name,
+CEIL(AVG( (bhd.build_result = 'SUCCESS' and ds.isInPipeline=true) + (bhd.build_result = 'UNSTABLE' and ds.isInPipeline=true)) * 100) AS pipeline_success_rate,
+CEIL(AVG( (bhd.build_result = 'SUCCESS' and ds.isInPipeline=false) + (bhd.build_result = 'UNSTABLE' and ds.isInPipeline=false)) * 100) AS non_pipeline_success_rate,
+SUM( CASE WHEN ds.isInPipeline=true THEN 1 ELSE 0 END)  AS pipeline_count,
+SUM( CASE WHEN ds.isInPipeline=false THEN 1 ELSE 0 END) AS non_pipeline_count
+FROM skapa_jobs.job_build_history bhd 
+JOIN skapa_jobs.job_details ds ON bhd.job_id=ds.job_name
+WHERE ds.team_name="team1"
+GROUP BY bhd.tenant_name
+ORDER BY pipeline_success_rate ASC
+LIMIT 10

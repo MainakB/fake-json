@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  skapadb:
+    image: mysql:8.0
+    container_name: skapadb
+    cap_add:
+      - SYS_NICE
+    restart: on-failure
+    environment:
+      - MYSQL_DATABASE=skapa
+      - MYSQL_ROOT_PASSWORD=admin
+    ports:
+      - '3306:3306'
+    volumes:
+      - .mysql/mysql_data/8.0:/var/lib/mysql
+  skapaapi:
+    image: kaniamu/fakejson:latest
+    init: true
+    ports:
+      - '5001:5001'
+    networks:
+      - webappnetwork
+networks:
+  webappnetwork:
+    driver: bridge
